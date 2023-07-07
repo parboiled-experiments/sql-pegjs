@@ -1738,8 +1738,6 @@ select_stmt_nake
   = __ cte:with_clause? __ KW_SELECT ___
     opts:option_clause? __
     d:KW_DISTINCT?      __
-    db:distinct_by_clause?  __
-    t:top?  __
     c:column_clause     __
     ci:into_clause?      __
     f:from_clause?      __
@@ -2054,13 +2052,7 @@ on_clause
 
 where_clause
   = KW_WHERE __ e:or_and_where_expr { return e; }
-  
-top
-  = KW_TOP __ (KW_INT / KW_ALL)? __ e:expr_list { return e.value; }
-  
-distinct_by_clause
-  = d:KW_DISTINCT? __ KW_BY __ e:expr_list { return e.value; }
- 
+
 group_by_clause
   = KW_GROUP __ KW_BY __ e:expr_list { return e.value; }
 
@@ -2505,7 +2497,6 @@ comparison_op_right
   / is_op_right
   / like_op_right
   / regexp_op_right
-  / all_op_right
 
 arithmetic_op_right
   = l:(__ arithmetic_comparison_operator __ additive_expr)+ {
@@ -2514,9 +2505,6 @@ arithmetic_op_right
 
 arithmetic_comparison_operator
   = ">=" / ">" / "<=" / "<>" / "<" / "=" / "!="
-
-all_op_right
-  = arithmetic_comparison_operator? __ KW_ALL __ select_stmt?
 
 is_op_right
   = KW_IS __ right:additive_expr {
@@ -2694,7 +2682,7 @@ column_name
 ident_name
   =  start:ident_start parts:ident_part* { return start + parts.join(''); }
 
-ident_start = [A-Za-z_%]
+ident_start = [A-Za-z_]
 
 ident_part  = [A-Za-z0-9_$]
 
@@ -3377,7 +3365,6 @@ KW_DATETIME     = "DATETIME"i     !ident_start { return 'DATETIME'; }
 KW_ROWS     = "ROWS"i     !ident_start { return 'ROWS'; }
 KW_TIME     = "TIME"i     !ident_start { return 'TIME'; }
 KW_TIMESTAMP = "TIMESTAMP"i !ident_start { return 'TIMESTAMP'; }
-KW_TOP = "TOP"i !ident_start
 KW_YEAR = "YEAR"i !ident_start { return 'YEAR'; }
 KW_TRUNCATE = "TRUNCATE"i !ident_start { return 'TRUNCATE'; }
 KW_USER     = "USER"i     !ident_start { return 'USER'; }
